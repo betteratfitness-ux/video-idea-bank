@@ -118,7 +118,8 @@
   <div class="trending-row" id="trending-row"></div>
 
   <div class="add-row">
-    <button class="btn" onclick="openForm()">+ Add Video Idea</button>
+    <button class="btn ghost small" onclick="importStarterIdeas()">Import Planned Videos</button>
+    <button class="btn" onclick="openForm()" style="margin-left:8px;">+ Add Video Idea</button>
   </div>
 
   <div id="pillars"></div>
@@ -195,6 +196,48 @@ const PLATFORMS = [
 const PLATFORM_MAP = Object.fromEntries(PLATFORMS.map(p=>[p.key,p]));
 
 const STATUSES = ['idea','scripted','filmed','posted'];
+
+const STARTER_IDEAS = [
+  {
+    title: "I Lost 70 Pounds Twice: This Time I Am Telling the Whole Truth",
+    notes: "Video 1 of the First 3 Tenisha Videos series. Origin story — restart viewer feels seen. Roland interviews Tenisha with full word-for-word script ready to record.",
+    pillar: "tenisha_reset", platforms: ["youtube","facebook","shorts"], importance: 5, trending: false,
+  },
+  {
+    title: "2 Kids Later: Do I Have More of an Excuse Now?",
+    notes: "Video 2 of the First 3 Tenisha Videos series. Highest-relatability hook for busy moms — kids, work, marriage, fatigue. Full script ready to record.",
+    pillar: "busy_parent", platforms: ["youtube","facebook","shorts"], importance: 5, trending: false,
+  },
+  {
+    title: "I Quit Keto: And I Think It Was a Mistake",
+    notes: "Video 3 of the First 3 Tenisha Videos series. Present-tense vulnerability confession, not a nutrition lecture. Teases a part 2 plateau conversation. Full script ready.",
+    pillar: "simple_food", platforms: ["youtube","facebook","shorts"], importance: 4, trending: false,
+  },
+  {
+    title: "This Is Not a Flex: Why I Have to Turn Off My Fat-Burning Routine",
+    notes: "Roland + Tenisha interview. Scale panic at 170, turning off fat-loss mode once the goal changes. Full 19-question interview script + 5 shorts hooks ready.",
+    pillar: "workout_systems", platforms: ["youtube","facebook","shorts"], importance: 4, trending: false,
+  },
+  {
+    title: "5 Things I Stopped Doing Because I Was Losing Too Much Weight",
+    notes: "Roland + Tenisha interview. Avatar signal: 'That's easy for you, you already know fitness.' Film alongside its cutdown '5 Things I Do Now.' Full script ready.",
+    pillar: "workout_systems", platforms: ["youtube","facebook","shorts","instagram"], importance: 4, trending: false,
+  },
+  {
+    title: "5 Things I Do Now So Fitness Does Not Take Over My Life",
+    notes: "Direct-to-camera cutdown from the '5 Things I Stopped Doing' interview — record same session, no extra filming day needed. Script ready.",
+    pillar: "workout_systems", platforms: ["youtube","shorts","facebook","instagram"], importance: 3, trending: false,
+  },
+];
+
+async function importStarterIdeas(){
+  const existingTitles = new Set(ideas.map(i => i.title));
+  const toInsert = STARTER_IDEAS.filter(i => !existingTitles.has(i.title));
+  if (!toInsert.length) { alert('These are already in your idea bank.'); return; }
+  const { error } = await sb.from('video_ideas').insert(toInsert);
+  if (error) { alert('Could not import: ' + error.message); return; }
+  loadIdeas();
+}
 
 let ideas = [];
 let editingId = null;
