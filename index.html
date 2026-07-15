@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Video Idea Bank — Better Fitness</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#131316; --panel2:#1a1a1f; --border:#2a2a30;
+    --text:#e7e9ea; --sub:#9a9aa2; --accent:#f07820; --gold:#f0b030;
+    --yt:#CC0000; --fb:#1877F2; --ig:#E1306C; --sub-c:#FF6719;
+    --p1:#f87171; --p2:#38bdf8; --p3:#f0b030; --p4:#4ade80; --p5:#E1306C; --p6:#a5b4fc; --p7:#f07820;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+  #auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .auth-box{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:380px;}
+  .auth-box h1{font-size:1.3rem;margin:0 0 4px;}
+  .auth-box p.sub{color:var(--sub);font-size:.85rem;margin:0 0 20px;}
+  input,textarea,select{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 12px;font-size:.95rem;margin-bottom:10px;font-family:inherit;}
+  textarea{resize:vertical;min-height:60px;}
+  button{cursor:pointer;font-family:inherit;}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:.9rem;font-weight:600;}
+  .btn:hover{filter:brightness(1.1);}
+  .btn.ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+  .btn.small{padding:6px 10px;font-size:.8rem;}
+  .btn.full{width:100%;}
+  .err{color:#f87171;font-size:.82rem;margin:-4px 0 10px;min-height:1em;}
+  .auth-toggle{text-align:center;margin-top:14px;font-size:.85rem;color:var(--sub);}
+  .auth-toggle a{color:var(--accent);cursor:pointer;text-decoration:none;}
+
+  #app{display:none;max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
+  header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  header.top h1{font-size:1.15rem;margin:0;}
+  header.top .who{color:var(--sub);font-size:.8rem;}
+
+  .hero{background:linear-gradient(135deg,#1a120a,#161018);border:1px solid var(--accent);border-radius:16px;padding:20px 22px;margin-bottom:20px;}
+  .hero .tag{color:var(--gold);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+  .hero h2{margin:0 0 6px;font-size:1.3rem;}
+  .hero .meta{color:var(--sub);font-size:.85rem;}
+  .hero.empty{border-color:var(--border);background:var(--panel);}
+
+  .section-title{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:26px 0 10px;display:flex;align-items:center;gap:8px;}
+  .trending-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
+  .trending-row .card{min-width:220px;}
+
+  .add-row{display:flex;justify-content:flex-end;margin-bottom:6px;}
+
+  .pillar-block{margin-bottom:22px;border-left:3px solid var(--pc);padding-left:14px;}
+  .pillar-block h3{font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+  .pillar-block h3 .count{color:var(--sub);font-weight:400;font-size:.8rem;}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;}
+
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;}
+  .card .title{font-weight:600;font-size:.95rem;margin-bottom:6px;padding-right:20px;}
+  .card .notes{color:var(--sub);font-size:.8rem;margin-bottom:8px;white-space:pre-wrap;}
+  .card .badges{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;}
+  .badge{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:20px;color:#fff;}
+  .stars{cursor:pointer;letter-spacing:2px;font-size:.9rem;color:var(--gold);margin-bottom:8px;}
+  .stars span{opacity:.3;}
+  .stars span.on{opacity:1;}
+  .card .row{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:8px;}
+  .card select{margin:0;padding:5px 8px;font-size:.75rem;width:auto;flex:1;}
+  .trend-toggle{font-size:.75rem;border:1px solid var(--border);background:transparent;color:var(--sub);border-radius:20px;padding:4px 9px;}
+  .trend-toggle.on{background:rgba(240,176,48,.15);color:var(--gold);border-color:var(--gold);}
+  .del{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--sub);font-size:1rem;line-height:1;padding:2px;}
+  .del:hover{color:#f87171;}
+  .empty-msg{color:var(--sub);font-size:.85rem;padding:10px 0;}
+
+  .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px;z-index:50;}
+  .overlay.show{display:flex;}
+  .modal{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;}
+  .modal h2{margin:0 0 16px;font-size:1.1rem;}
+  .modal label{font-size:.78rem;color:var(--sub);display:block;margin-bottom:4px;}
+  .field{margin-bottom:12px;}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;}
+  .chip{border:1px solid var(--border);background:var(--panel2);color:var(--text);border-radius:20px;padding:5px 12px;font-size:.78rem;}
+  .chip.on{border-color:var(--accent);background:rgba(240,120,32,.18);}
+  .modal-actions{display:flex;gap:8px;margin-top:16px;}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-box">
+    <h1>Video Idea Bank</h1>
+    <p class="sub">Better Fitness content pipeline — sign in to your account.</p>
+    <div id="signin-form">
+      <input id="si-email" type="email" placeholder="Email" autocomplete="username" />
+      <input id="si-pass" type="password" placeholder="Password" autocomplete="current-password" />
+      <div class="err" id="si-err"></div>
+      <button class="btn full" onclick="doSignIn()">Sign In</button>
+      <div class="auth-toggle">No account? <a onclick="showSignUp()">Create one</a></div>
+    </div>
+    <div id="signup-form" style="display:none;">
+      <input id="su-email" type="email" placeholder="Email" autocomplete="username" />
+      <input id="su-pass" type="password" placeholder="Password (6+ characters)" autocomplete="new-password" />
+      <div class="err" id="su-err"></div>
+      <button class="btn full" onclick="doSignUp()">Create Account</button>
+      <div class="auth-toggle">Already have one? <a onclick="showSignIn()">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+  <header class="top">
+    <h1>🎬 Video Idea Bank</h1>
+    <div>
+      <span class="who" id="who"></span>
+      <button class="btn ghost small" onclick="signOut()" style="margin-left:10px;">Sign Out</button>
+    </div>
+  </header>
+
+  <div id="hero"></div>
+
+  <div class="section-title">🔥 Trending Possibilities</div>
+  <div class="trending-row" id="trending-row"></div>
+
+  <div class="add-row">
+    <button class="btn" onclick="openForm()">+ Add Video Idea</button>
+  </div>
+
+  <div id="pillars"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <h2 id="modal-title">New Video Idea</h2>
+    <div class="field">
+      <label>Title</label>
+      <input id="f-title" placeholder="e.g. 'Why Monday restarts fail'" />
+    </div>
+    <div class="field">
+      <label>Notes / angle</label>
+      <textarea id="f-notes" placeholder="Hook, angle, why it matters to Tanya/Marcus..."></textarea>
+    </div>
+    <div class="field">
+      <label>Content Pillar</label>
+      <select id="f-pillar"></select>
+    </div>
+    <div class="field">
+      <label>Platforms</label>
+      <div class="chip-row" id="f-platforms"></div>
+    </div>
+    <div class="field">
+      <label>Importance to avatar</label>
+      <div class="stars" id="f-stars" style="font-size:1.3rem;"></div>
+    </div>
+    <div class="field">
+      <label><input type="checkbox" id="f-trending" style="width:auto;margin:0 6px 0 0;" />Trending right now</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn ghost full" onclick="closeForm()">Cancel</button>
+      <button class="btn full" onclick="saveIdea()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Configure your Supabase project here ──────────────────────────────
+// Supabase dashboard → Project Settings → API
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// ────────────────────────────────────────────────────────────────────
+
+if (SUPABASE_URL.startsWith('YOUR_') || SUPABASE_ANON_KEY.startsWith('YOUR_')) {
+  document.body.innerHTML = `<div style="max-width:480px;margin:80px auto;padding:24px;font-family:sans-serif;background:#131316;color:#e7e9ea;border:1px solid #2a2a30;border-radius:12px;">
+    <h2 style="margin-top:0;">Setup needed</h2>
+    <p>Open <code>index.html</code> and replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; tag with your Supabase project's values (Project Settings → API).</p>
+  </div>`;
+  throw new Error('Supabase not configured — see on-page instructions.');
+}
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const PILLARS = [
+  { key:'stop_starting_over', label:'Stop Starting Over', color:'var(--p1)', weight:10 },
+  { key:'workout_systems',    label:'Real-Life Workout Systems', color:'var(--p2)', weight:8 },
+  { key:'daily_stars',        label:'Daily Stars (Movement · Steps · Protein)', color:'var(--p3)', weight:7 },
+  { key:'simple_food',        label:'Simple Food for Real Life', color:'var(--p4)', weight:7 },
+  { key:'tenisha_reset',      label:"Tenisha's Real-Life Reset", color:'var(--p5)', weight:9 },
+  { key:'busy_parent',        label:'Busy Parent Energy', color:'var(--p6)', weight:8 },
+  { key:'faith_family',       label:'Faith, Family, Identity', color:'var(--p7)', weight:6 },
+];
+const PILLAR_MAP = Object.fromEntries(PILLARS.map(p=>[p.key,p]));
+
+const PLATFORMS = [
+  { key:'youtube', label:'YouTube', color:'var(--yt)' },
+  { key:'shorts',  label:'YT Shorts', color:'var(--yt)' },
+  { key:'facebook',label:'Facebook', color:'var(--fb)' },
+  { key:'instagram',label:'Instagram', color:'var(--ig)' },
+  { key:'substack',label:'Substack', color:'var(--sub-c)' },
+];
+const PLATFORM_MAP = Object.fromEntries(PLATFORMS.map(p=>[p.key,p]));
+
+const STATUSES = ['idea','scripted','filmed','posted'];
+
+let ideas = [];
+let editingId = null;
+let formPlatforms = new Set();
+let formStars = 3;
+
+// ── Auth ───────────────────────────────────────────────────────────
+function showSignUp(){ document.getElementById('signin-form').style.display='none'; document.getElementById('signup-form').style.display='block'; }
+function showSignIn(){ document.getElementById('signup-form').style.display='none'; document.getElementById('signin-form').style.display='block'; }
+
+async function doSignIn(){
+  const email = document.getElementById('si-email').value.trim();
+  const password = document.getElementById('si-pass').value;
+  const errEl = document.getElementById('si-err');
+  errEl.textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) errEl.textContent = error.message;
+}
+
+async function doSignUp(){
+  const email = document.getElementById('su-email').value.trim();
+  const password = document.getElementById('su-pass').value;
+  const errEl = document.getElementById('su-err');
+  errEl.textContent = '';
+  const { error } = await sb.auth.signUp({ email, password });
+  if (error) { errEl.textContent = error.message; return; }
+  errEl.style.color = 'var(--gold)';
+  errEl.textContent = 'Check your email to confirm, then sign in.';
+}
+
+async function signOut(){
+  await sb.auth.signOut();
+}
+
+sb.auth.onAuthStateChange((event, session) => {
+  if (session) {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('who').textContent = session.user.email;
+    loadIdeas();
+  } else {
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── Data ───────────────────────────────────────────────────────────
+async function loadIdeas(){
+  const { data, error } = await sb.from('video_ideas').select('*').order('created_at', { ascending:true });
+  if (error) { console.error(error); alert('Could not load ideas: ' + error.message); return; }
+  ideas = data || [];
+  render();
+}
+
+function score(idea){
+  const pw = PILLAR_MAP[idea.pillar]?.weight || 0;
+  return pw + idea.importance*4 + (idea.trending?6:0);
+}
+
+// ── Render ─────────────────────────────────────────────────────────
+function render(){
+  renderHero();
+  renderTrending();
+  renderPillars();
+}
+
+function platformBadges(idea){
+  return (idea.platforms||[]).map(k=>{
+    const p = PLATFORM_MAP[k];
+    if (!p) return '';
+    return `<span class="badge" style="background:${p.color}">${p.label}</span>`;
+  }).join('');
+}
+
+function starHtml(n, size){
+  let h = '';
+  for (let i=1;i<=5;i++) h += `<span class="${i<=n?'on':''}">★</span>`;
+  return h;
+}
+
+function renderHero(){
+  const candidates = ideas.filter(i => i.status !== 'posted');
+  const el = document.getElementById('hero');
+  if (!candidates.length){ el.innerHTML = `<div class="hero empty"><div class="tag">Next Video To Make</div><h2>No open ideas yet</h2><div class="meta">Add your first idea below.</div></div>`; return; }
+  const top = candidates.slice().sort((a,b)=>score(b)-score(a))[0];
+  const pillar = PILLAR_MAP[top.pillar];
+  el.innerHTML = `
+    <div class="hero">
+      <div class="tag">🎯 Next Video To Make</div>
+      <h2>${escapeHtml(top.title)}</h2>
+      <div class="meta">${pillar.label} · ${platformBadges(top)} · ${starHtml(top.importance)} ${top.trending?'· 🔥 trending':''}</div>
+    </div>`;
+}
+
+function renderTrending(){
+  const row = document.getElementById('trending-row');
+  const list = ideas.filter(i=>i.trending && i.status!=='posted');
+  if (!list.length){ row.innerHTML = `<div class="empty-msg">Mark an idea "Trending" to see it here.</div>`; return; }
+  row.innerHTML = list.map(cardHtml).join('');
+}
+
+function renderPillars(){
+  const wrap = document.getElementById('pillars');
+  wrap.innerHTML = PILLARS.map(p=>{
+    const list = ideas.filter(i=>i.pillar===p.key);
+    return `
+      <div class="pillar-block" style="--pc:${p.color}">
+        <h3>${p.label} <span class="count">(${list.length})</span></h3>
+        <div class="cards">
+          ${list.length ? list.map(cardHtml).join('') : '<div class="empty-msg">No ideas yet.</div>'}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function cardHtml(idea){
+  const statusOptions = STATUSES.map(s=>`<option value="${s}" ${idea.status===s?'selected':''}>${s[0].toUpperCase()+s.slice(1)}</option>`).join('');
+  return `
+    <div class="card">
+      <button class="del" onclick="deleteIdea('${idea.id}')" title="Delete">✕</button>
+      <div class="title" onclick="openForm('${idea.id}')" style="cursor:pointer;">${escapeHtml(idea.title)}</div>
+      ${idea.notes ? `<div class="notes">${escapeHtml(idea.notes)}</div>` : ''}
+      <div class="badges">${platformBadges(idea)}</div>
+      <div class="stars">
+        ${[1,2,3,4,5].map(n=>`<span class="${n<=idea.importance?'on':''}" onclick="setImportance('${idea.id}',${n})">★</span>`).join('')}
+      </div>
+      <div class="row">
+        <select onchange="setStatus('${idea.id}', this.value)">${statusOptions}</select>
+        <button class="trend-toggle ${idea.trending?'on':''}" onclick="toggleTrending('${idea.id}')">🔥</button>
+      </div>
+    </div>`;
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Mutations ──────────────────────────────────────────────────────
+async function setImportance(id, n){
+  await sb.from('video_ideas').update({ importance:n }).eq('id', id);
+  loadIdeas();
+}
+async function toggleTrending(id){
+  const idea = ideas.find(i=>i.id===id);
+  await sb.from('video_ideas').update({ trending: !idea.trending }).eq('id', id);
+  loadIdeas();
+}
+async function setStatus(id, status){
+  await sb.from('video_ideas').update({ status }).eq('id', id);
+  loadIdeas();
+}
+async function deleteIdea(id){
+  if (!confirm('Delete this video idea?')) return;
+  await sb.from('video_ideas').delete().eq('id', id);
+  loadIdeas();
+}
+
+// ── Form ───────────────────────────────────────────────────────────
+function openForm(id){
+  editingId = id || null;
+  const idea = id ? ideas.find(i=>i.id===id) : null;
+
+  document.getElementById('modal-title').textContent = idea ? 'Edit Video Idea' : 'New Video Idea';
+  document.getElementById('f-title').value = idea?.title || '';
+  document.getElementById('f-notes').value = idea?.notes || '';
+  document.getElementById('f-trending').checked = idea?.trending || false;
+
+  const pillarSel = document.getElementById('f-pillar');
+  pillarSel.innerHTML = PILLARS.map(p=>`<option value="${p.key}" ${idea?.pillar===p.key?'selected':''}>${p.label}</option>`).join('');
+
+  formPlatforms = new Set(idea?.platforms || []);
+  document.getElementById('f-platforms').innerHTML = PLATFORMS.map(p=>
+    `<button type="button" class="chip ${formPlatforms.has(p.key)?'on':''}" onclick="togglePlatformChip('${p.key}')">${p.label}</button>`
+  ).join('');
+
+  formStars = idea?.importance || 3;
+  renderFormStars();
+
+  document.getElementById('overlay').classList.add('show');
+}
+
+function togglePlatformChip(key){
+  if (formPlatforms.has(key)) formPlatforms.delete(key); else formPlatforms.add(key);
+  document.getElementById('f-platforms').innerHTML = PLATFORMS.map(p=>
+    `<button type="button" class="chip ${formPlatforms.has(p.key)?'on':''}" onclick="togglePlatformChip('${p.key}')">${p.label}</button>`
+  ).join('');
+}
+
+function renderFormStars(){
+  document.getElementById('f-stars').innerHTML = [1,2,3,4,5].map(n=>
+    `<span class="${n<=formStars?'on':''}" onclick="setFormStars(${n})">★</span>`
+  ).join('');
+}
+function setFormStars(n){ formStars = n; renderFormStars(); }
+
+function closeForm(){
+  document.getElementById('overlay').classList.remove('show');
+}
+
+async function saveIdea(){
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { alert('Title is required.'); return; }
+  const payload = {
+    title,
+    notes: document.getElementById('f-notes').value.trim(),
+    pillar: document.getElementById('f-pillar').value,
+    platforms: Array.from(formPlatforms),
+    importance: formStars,
+    trending: document.getElementById('f-trending').checked,
+  };
+  const { error } = editingId
+    ? await sb.from('video_ideas').update(payload).eq('id', editingId)
+    : await sb.from('video_ideas').insert(payload);
+  if (error) { alert('Could not save: ' + error.message); return; }
+  closeForm();
+  loadIdeas();
+}
+</script>
+</body>
+</html>
