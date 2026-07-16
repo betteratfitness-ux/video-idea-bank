@@ -31,48 +31,61 @@
   .auth-toggle a{color:var(--accent);cursor:pointer;text-decoration:none;}
 
   #app{display:none;max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
-  header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
   header.top h1{font-size:1.15rem;margin:0;}
   header.top .who{color:var(--sub);font-size:.8rem;}
 
-  /* Quick Add */
-  .quick-add{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:22px;}
-  .quick-add-row{display:flex;gap:8px;margin-bottom:8px;}
-  .quick-add-row input{flex:1;margin:0;}
-  .quick-add-row2{margin-bottom:8px;}
-  .quick-add-row2 textarea{margin:0;min-height:44px;}
-  .quick-add-row3{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
-  .quick-add-row3 select{width:auto;margin:0;flex:0 0 auto;min-width:170px;}
-  .quick-add-row3 label{font-size:.82rem;color:var(--sub);display:flex;align-items:center;gap:5px;white-space:nowrap;}
-  .success-msg{color:var(--green);font-size:.82rem;margin-top:8px;min-height:1em;}
+  /* Tabs */
+  .tab-nav{display:flex;gap:4px;margin-bottom:22px;border-bottom:1px solid var(--border);}
+  .tab-btn{background:transparent;border:none;color:var(--sub);font-size:.9rem;font-weight:600;padding:10px 14px;border-bottom:2px solid transparent;margin-bottom:-1px;}
+  .tab-btn:hover{color:var(--text);}
+  .tab-btn.active{color:var(--text);border-bottom-color:var(--accent);}
+  .tab-section{display:none;}
+  .tab-section.active{display:block;}
 
-  .hero{background:linear-gradient(135deg,#1a120a,#161018);border:1px solid var(--accent);border-radius:16px;padding:20px 22px;margin-bottom:20px;}
-  .hero .tag{color:var(--gold);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
-  .hero h2{margin:0 0 6px;font-size:1.3rem;}
-  .hero .meta{color:var(--sub);font-size:.85rem;}
-  .hero.empty{border-color:var(--border);background:var(--panel);}
-  .hero-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
+  /* Today */
+  .today-card{background:linear-gradient(135deg,#1a120a,#161018);border:1px solid var(--accent);border-radius:16px;padding:24px;}
+  .today-card.empty{border-color:var(--border);background:var(--panel);text-align:center;padding:40px 20px;}
+  .today-card .tag{color:var(--gold);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+  .today-card h2{margin:0 0 8px;font-size:1.5rem;cursor:pointer;}
+  .today-card .meta{color:var(--sub);font-size:.9rem;margin-bottom:4px;}
+  .next-action-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:18px;}
+  .next-action-row select{width:auto;margin:0;flex:0 0 auto;min-width:170px;}
+  .today-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+
+  /* This Week */
+  .thisweek-panel{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px 22px;}
+  .thisweek-panel h2{margin:0 0 4px;font-size:1.25rem;cursor:pointer;}
+  .thisweek-panel .meta{color:var(--sub);font-size:.85rem;margin-bottom:4px;}
+  .thisweek-section{margin-top:22px;}
+  .thisweek-section h4{font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;color:var(--sub);margin:0 0 12px;}
+  .thisweek-links .field{margin-bottom:10px;}
+  .thisweek-links .field label{font-size:.78rem;color:var(--sub);display:block;margin-bottom:4px;}
 
   .section-title{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:26px 0 10px;display:flex;align-items:center;gap:8px;}
   .trending-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
   .trending-row .card{min-width:220px;}
 
-  .week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
-
-  .filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 14px;}
+  .filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
   .filter-bar input{flex:1;min-width:160px;margin:0;}
   .filter-bar select{width:auto;margin:0;min-width:130px;}
 
   .add-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
 
-  /* Inbox */
+  /* Quick Add / Inbox */
+  .quick-add{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:22px;}
+  .quick-add-row{display:flex;gap:8px;margin-bottom:8px;}
+  .quick-add-row input{flex:1;margin:0;}
+  .quick-add-row2{margin-bottom:8px;}
+  .quick-add-row2 textarea{margin:0;min-height:44px;}
+  .success-msg{color:var(--green);font-size:.82rem;margin-top:8px;min-height:1em;}
+
   .inbox-block{margin-bottom:22px;border-left:3px dashed var(--sub);padding-left:14px;}
-  .inbox-block h3{font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
-  .inbox-block h3 .count{color:var(--sub);font-weight:400;font-size:.8rem;}
+  .inbox-block.later{border-left-style:dashed;border-left-color:var(--border);opacity:.85;}
   .inbox-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;}
   .inbox-card .title{font-weight:600;font-size:.95rem;margin-bottom:6px;padding-right:20px;cursor:pointer;}
   .inbox-card .notes{color:var(--sub);font-size:.8rem;margin-bottom:8px;white-space:pre-wrap;}
-  .inbox-card .row{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:8px;}
+  .inbox-card .row{display:flex;justify-content:flex-start;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap;}
   .link-badge{display:inline-block;font-size:.68rem;color:var(--sub);background:var(--panel2);border-radius:20px;padding:2px 8px;}
   .repurpose-badge{display:inline-block;font-size:.7rem;color:var(--sub);background:var(--panel2);border-radius:20px;padding:2px 8px;margin-left:4px;}
 
@@ -153,44 +166,63 @@
     </div>
   </header>
 
-  <!-- Inbox Capture -->
-  <div class="quick-add">
-    <div class="quick-add-row">
-      <input id="qa-title" placeholder="Capture a video idea..." onkeydown="if(event.key==='Enter')quickAdd()" />
-      <button class="btn" onclick="quickAdd()">Add to Inbox</button>
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="today" onclick="switchTab('today')">Today</button>
+    <button class="tab-btn" data-tab="inbox" onclick="switchTab('inbox')">Inbox</button>
+    <button class="tab-btn" data-tab="thisweek" onclick="switchTab('thisweek')">This Week</button>
+    <button class="tab-btn" data-tab="library" onclick="switchTab('library')">Library</button>
+  </nav>
+
+  <!-- TODAY -->
+  <section class="tab-section active" id="tab-today">
+    <div id="today-card"></div>
+  </section>
+
+  <!-- INBOX -->
+  <section class="tab-section" id="tab-inbox">
+    <div class="quick-add">
+      <div class="quick-add-row">
+        <input id="qa-title" placeholder="Capture a video idea..." onkeydown="if(event.key==='Enter')quickAdd()" />
+        <button class="btn" onclick="quickAdd()">Add to Inbox</button>
+      </div>
+      <div class="quick-add-row2">
+        <textarea id="qa-notes" placeholder="Notes (optional)"></textarea>
+      </div>
+      <div class="quick-add-row2" style="margin-bottom:0;">
+        <input id="qa-source-link" placeholder="Source link (optional) — where this idea came from" />
+      </div>
+      <div class="success-msg" id="qa-success"></div>
     </div>
-    <div class="quick-add-row2">
-      <textarea id="qa-notes" placeholder="Notes (optional)"></textarea>
+
+    <div class="section-title">📥 Needs Triage</div>
+    <div id="inbox-list"></div>
+
+    <div class="section-title">⏳ Later</div>
+    <div id="inbox-later-list"></div>
+  </section>
+
+  <!-- THIS WEEK -->
+  <section class="tab-section" id="tab-thisweek">
+    <div id="thisweek-panel"></div>
+  </section>
+
+  <!-- LIBRARY -->
+  <section class="tab-section" id="tab-library">
+    <div class="section-title">🔥 Trending Possibilities</div>
+    <div class="trending-row" id="trending-row"></div>
+
+    <div class="section-title" style="margin-top:26px;">📚 All Ideas</div>
+    <div class="filter-bar">
+      <input id="filter-search" placeholder="Search title or notes..." oninput="applyFilters()" />
+      <select id="filter-status" onchange="applyFilters()"></select>
+      <select id="filter-platform" onchange="applyFilters()"></select>
+      <select id="filter-pillar" onchange="applyFilters()"></select>
     </div>
-    <div class="quick-add-row2" style="margin-bottom:0;">
-      <input id="qa-source-link" placeholder="Source link (optional) — where this idea came from" />
+    <div class="add-row">
+      <button class="btn ghost small" onclick="importPlannedVideos()">Import Planned Videos</button>
     </div>
-    <div class="success-msg" id="qa-success"></div>
-  </div>
-
-  <div class="section-title">📥 Inbox</div>
-  <div id="inbox-list"></div>
-
-  <div id="hero"></div>
-
-  <div class="section-title">📅 This Week Focus</div>
-  <div class="week-grid" id="week-grid"></div>
-
-  <div class="section-title">🔥 Trending Possibilities</div>
-  <div class="trending-row" id="trending-row"></div>
-
-  <div class="filter-bar">
-    <input id="filter-search" placeholder="Search title or notes..." oninput="applyFilters()" />
-    <select id="filter-status" onchange="applyFilters()"></select>
-    <select id="filter-platform" onchange="applyFilters()"></select>
-    <select id="filter-pillar" onchange="applyFilters()"></select>
-  </div>
-
-  <div class="add-row">
-    <button class="btn ghost small" onclick="importPlannedVideos()">Import Planned Videos</button>
-  </div>
-
-  <div id="pillars"></div>
+    <div id="pillars"></div>
+  </section>
 </div>
 
 <div class="overlay" id="overlay">
@@ -224,6 +256,10 @@
         <option value="filmed">Filmed</option>
         <option value="posted">Posted</option>
       </select>
+    </div>
+    <div class="field">
+      <label>Next action</label>
+      <select id="f-next-action"></select>
     </div>
     <div class="field">
       <label>Planned date</label>
@@ -314,6 +350,12 @@ const REPURPOSE_ITEMS = [
   { key:'pinned_cta',   label:'Pinned comment / CTA posted' },
 ];
 
+const NEXT_ACTIONS = [
+  'Outline', 'Script', 'Record', 'Edit', 'Make Thumbnail',
+  'Post YouTube', 'Pull Shorts', 'Post Facebook', 'Post Instagram',
+  'Send Email', 'Review Results',
+];
+
 // ── Bulk import ────────────────────────────────────────────────────
 // Add more planned videos here anytime — paste additional objects into this array.
 // Shape: { title, notes, pillar: <one of the 7 pillar keys above>, platforms: [<platform keys above>], importance: 1-5, trending: true/false }
@@ -370,6 +412,15 @@ let editingId = null;
 let formPlatforms = new Set();
 let formStars = 3;
 let filterState = { search:'', status:'', platform:'', pillar:'' };
+let activeTab = 'today';
+
+// ── Tabs ───────────────────────────────────────────────────────────
+function switchTab(tab){
+  activeTab = tab;
+  document.querySelectorAll('.tab-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+}
 
 // ── Auth ───────────────────────────────────────────────────────────
 function showSignUp(){ document.getElementById('signin-form').style.display='none'; document.getElementById('signup-form').style.display='block'; }
@@ -430,11 +481,16 @@ function openIdeasSorted(){
   return ideas.filter(i => i.status !== 'posted' && i.pillar).sort((a,b) => score(b) - score(a));
 }
 
+function activeIdea(){
+  return openIdeasSorted()[0] || null;
+}
+
 // ── Render ─────────────────────────────────────────────────────────
 function render(){
-  renderInbox();
-  renderHero();
-  renderWeekFocus();
+  renderToday();
+  renderInboxNeedsTriage();
+  renderInboxLater();
+  renderThisWeek();
   renderTrending();
   renderPillars();
 }
@@ -453,40 +509,106 @@ function starHtml(n){
   return h;
 }
 
-function renderHero(){
-  const el = document.getElementById('hero');
-  const open = openIdeasSorted();
-  if (!open.length){ el.innerHTML = `<div class="hero empty"><div class="tag">Next Video To Make</div><h2>No open ideas yet</h2><div class="meta">Add your first idea with Quick Add above.</div></div>`; return; }
-  const top = open[0];
-  const pillar = PILLAR_MAP[top.pillar];
+// ── Today ──────────────────────────────────────────────────────────
+function renderToday(){
+  const el = document.getElementById('today-card');
+  const idea = activeIdea();
+  if (!idea){
+    el.innerHTML = `<div class="today-card empty">
+      <div class="tag">Today's Move</div>
+      <h2 style="cursor:default;">Nothing lined up yet</h2>
+      <div class="meta">Categorize something in your Inbox, or check the Library.</div>
+    </div>`;
+    return;
+  }
+  const pillar = PILLAR_MAP[idea.pillar];
+  const nextActionOptions = '<option value="">— none set —</option>' +
+    NEXT_ACTIONS.map(a => `<option value="${a}" ${idea.next_action===a?'selected':''}>${a}</option>`).join('');
   el.innerHTML = `
-    <div class="hero">
-      <div class="tag">🎯 Next Video To Make</div>
-      <h2>${escapeHtml(top.title)}</h2>
-      <div class="meta">${pillar.label} · ${platformBadges(top)} · ${starHtml(top.importance)} ${top.trending?'· 🔥 trending':''} <span class="score-badge">Score ${score(top)}</span></div>
-      <div class="meta" style="margin-top:6px;">Status: ${top.status[0].toUpperCase()+top.status.slice(1)}</div>
-      <div class="hero-actions">
-        <button class="btn ghost small" onclick="setStatus('${top.id}','scripted')">Mark Scripted</button>
-        <button class="btn ghost small" onclick="setStatus('${top.id}','filmed')">Mark Filmed</button>
-        <button class="btn ghost small" onclick="setStatus('${top.id}','posted')">Mark Posted</button>
+    <div class="today-card">
+      <div class="tag">🎯 Today's Move</div>
+      <h2 onclick="openForm('${idea.id}')">${escapeHtml(idea.title)}</h2>
+      <div class="meta">${pillar.label} · ${platformBadges(idea)}</div>
+      <div class="meta">Status: ${idea.status[0].toUpperCase()+idea.status.slice(1)}</div>
+      <div class="next-action-row">
+        <select onchange="setNextAction('${idea.id}', this.value)">${nextActionOptions}</select>
+      </div>
+      <div class="today-actions">
+        <button class="btn ghost" onclick="switchTab('thisweek')">Open Content Pack</button>
+        <button class="btn" onclick="advanceNextAction('${idea.id}')">Mark Next Step Done</button>
       </div>
     </div>`;
 }
 
-function renderWeekFocus(){
-  const el = document.getElementById('week-grid');
-  const rest = openIdeasSorted().slice(1, 4);
-  if (!rest.length){ el.innerHTML = `<div class="empty-msg">Nothing else queued up yet.</div>`; return; }
-  el.innerHTML = rest.map(cardHtml).join('');
+async function setNextAction(id, value){
+  await sb.from('video_ideas').update({ next_action: value || null }).eq('id', id);
+  loadIdeas();
 }
 
-function renderTrending(){
-  const row = document.getElementById('trending-row');
-  const list = ideas.filter(i=>i.trending && i.status!=='posted' && i.pillar).sort((a,b)=>score(b)-score(a));
-  if (!list.length){ row.innerHTML = `<div class="empty-msg">No trending ideas flagged yet. Toggle 🔥 on a card to add one here.</div>`; return; }
-  row.innerHTML = list.map(cardHtml).join('');
+function advanceNextAction(id){
+  const idea = ideas.find(i=>i.id===id);
+  if (!idea) return;
+  const idx = NEXT_ACTIONS.indexOf(idea.next_action);
+  const next = NEXT_ACTIONS[idx + 1] || null;
+  setNextAction(id, next);
 }
 
+// ── This Week ──────────────────────────────────────────────────────
+function renderThisWeek(){
+  const el = document.getElementById('thisweek-panel');
+  const idea = activeIdea();
+  if (!idea){
+    el.innerHTML = `<div class="empty-big">No active idea yet. Categorize something in your Inbox to build this week's content pack.</div>`;
+    return;
+  }
+  const pillar = PILLAR_MAP[idea.pillar];
+  const rep = idea.repurpose || {};
+
+  el.innerHTML = `
+    <div class="thisweek-panel">
+      <h2 onclick="openForm('${idea.id}')">${escapeHtml(idea.title)}</h2>
+      <div class="meta">${pillar.label} · ${platformBadges(idea)}</div>
+      <button class="btn ghost small" style="margin-top:10px;" onclick="openForm('${idea.id}')">Edit full details</button>
+
+      <div class="thisweek-section">
+        <h4>✅ Repurposing Checklist</h4>
+        <div class="checklist">
+          ${REPURPOSE_ITEMS.map(item => `
+            <label>
+              <input type="checkbox" id="tw-rep-${item.key}" ${rep[item.key] ? 'checked' : ''}
+                onchange="updateRepurposeItem('${idea.id}', '${item.key}', this.checked)" />
+              ${item.label}
+            </label>`).join('')}
+        </div>
+      </div>
+
+      <div class="thisweek-section thisweek-links">
+        <h4>📎 Source &amp; Asset Links</h4>
+        <div class="field"><label>Source link</label><input type="url" id="tw-source-link" value="${escapeHtml(idea.source_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','source_link', this.value)" /></div>
+        <div class="field"><label>Script</label><input type="url" id="tw-script-link" value="${escapeHtml(idea.script_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','script_link', this.value)" /></div>
+        <div class="field"><label>Canva thumbnail</label><input type="url" id="tw-canva-link" value="${escapeHtml(idea.canva_thumbnail_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','canva_thumbnail_link', this.value)" /></div>
+        <div class="field"><label>Raw footage</label><input type="url" id="tw-raw-footage-link" value="${escapeHtml(idea.raw_footage_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','raw_footage_link', this.value)" /></div>
+        <div class="field"><label>Edited clips</label><input type="url" id="tw-edited-clips-link" value="${escapeHtml(idea.edited_clips_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','edited_clips_link', this.value)" /></div>
+        <div class="field"><label>Final export</label><input type="url" id="tw-final-export-link" value="${escapeHtml(idea.final_export_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','final_export_link', this.value)" /></div>
+        <div class="field" style="margin-bottom:0;"><label>Google Drive folder</label><input type="url" id="tw-drive-link" value="${escapeHtml(idea.google_drive_folder_link||'')}" placeholder="https://..." onblur="updateAssetLink('${idea.id}','google_drive_folder_link', this.value)" /></div>
+      </div>
+    </div>`;
+}
+
+async function updateRepurposeItem(id, key, checked){
+  const idea = ideas.find(i=>i.id===id);
+  if (!idea) return;
+  const rep = { ...(idea.repurpose || {}), [key]: checked };
+  await sb.from('video_ideas').update({ repurpose: rep }).eq('id', id);
+  loadIdeas();
+}
+
+async function updateAssetLink(id, field, value){
+  await sb.from('video_ideas').update({ [field]: value.trim() || null }).eq('id', id);
+  loadIdeas();
+}
+
+// ── Inbox ──────────────────────────────────────────────────────────
 function hasAnyLink(idea){
   return !!(idea.source_link || idea.script_link || idea.canva_thumbnail_link ||
     idea.raw_footage_link || idea.edited_clips_link || idea.final_export_link || idea.google_drive_folder_link);
@@ -497,11 +619,18 @@ function repurposeCount(idea){
   return REPURPOSE_ITEMS.filter(item => rep[item.key]).length;
 }
 
-function renderInbox(){
+function renderInboxNeedsTriage(){
   const el = document.getElementById('inbox-list');
-  const list = ideas.filter(i => !i.pillar).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  const list = ideas.filter(i => !i.pillar && !i.later).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
   if (!list.length){ el.innerHTML = `<div class="empty-msg">Inbox is empty — everything's categorized.</div>`; return; }
   el.innerHTML = `<div class="inbox-block"><div class="cards">${list.map(inboxCardHtml).join('')}</div></div>`;
+}
+
+function renderInboxLater(){
+  const el = document.getElementById('inbox-later-list');
+  const list = ideas.filter(i => !i.pillar && i.later).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  if (!list.length){ el.innerHTML = `<div class="empty-msg">Nothing snoozed for later.</div>`; return; }
+  el.innerHTML = `<div class="inbox-block later"><div class="cards">${list.map(laterCardHtml).join('')}</div></div>`;
 }
 
 function inboxCardHtml(idea){
@@ -513,8 +642,35 @@ function inboxCardHtml(idea){
       ${idea.source_link ? `<a class="posted-link" href="${escapeHtml(idea.source_link)}" target="_blank" rel="noopener">🔗 Source</a>` : ''}
       <div class="row">
         <button class="btn ghost small" onclick="openForm('${idea.id}')">Categorize →</button>
+        <button class="btn ghost small" onclick="toggleLater('${idea.id}', true)">Keep Later</button>
       </div>
     </div>`;
+}
+
+function laterCardHtml(idea){
+  return `
+    <div class="inbox-card">
+      <button class="del" onclick="deleteIdea('${idea.id}')" title="Delete">✕</button>
+      <div class="title" onclick="openForm('${idea.id}')">${escapeHtml(idea.title)}</div>
+      ${idea.notes ? `<div class="notes">${escapeHtml(idea.notes)}</div>` : ''}
+      ${idea.source_link ? `<a class="posted-link" href="${escapeHtml(idea.source_link)}" target="_blank" rel="noopener">🔗 Source</a>` : ''}
+      <div class="row">
+        <button class="btn ghost small" onclick="toggleLater('${idea.id}', false)">Bring Back</button>
+      </div>
+    </div>`;
+}
+
+async function toggleLater(id, value){
+  await sb.from('video_ideas').update({ later: value }).eq('id', id);
+  loadIdeas();
+}
+
+// ── Library ────────────────────────────────────────────────────────
+function renderTrending(){
+  const row = document.getElementById('trending-row');
+  const list = ideas.filter(i=>i.trending && i.status!=='posted' && i.pillar).sort((a,b)=>score(b)-score(a));
+  if (!list.length){ row.innerHTML = `<div class="empty-msg">No trending ideas flagged yet. Toggle 🔥 on a card to add one here.</div>`; return; }
+  row.innerHTML = list.map(cardHtml).join('');
 }
 
 function matchesFilters(idea){
@@ -541,7 +697,7 @@ function renderPillars(){
   const wrap = document.getElementById('pillars');
 
   if (!ideas.length){
-    wrap.innerHTML = `<div class="empty-big">No ideas yet. Use Quick Add above to capture your first one.</div>`;
+    wrap.innerHTML = `<div class="empty-big">No ideas yet. Capture your first one in the Inbox tab.</div>`;
     return;
   }
 
@@ -661,6 +817,7 @@ function openForm(id){
   document.getElementById('f-notes').value = idea.notes || '';
   document.getElementById('f-trending').checked = idea.trending || false;
   document.getElementById('f-status').value = idea.status;
+  document.getElementById('f-next-action').value = idea.next_action || '';
   document.getElementById('f-planned-date').value = idea.planned_date || '';
   document.getElementById('f-posted-url').value = idea.posted_url || '';
   document.getElementById('f-source-link').value = idea.source_link || '';
@@ -714,6 +871,7 @@ async function saveIdea(){
     importance: formStars,
     trending: document.getElementById('f-trending').checked,
     status: document.getElementById('f-status').value,
+    next_action: document.getElementById('f-next-action').value || null,
     planned_date: document.getElementById('f-planned-date').value || null,
     posted_url: document.getElementById('f-posted-url').value.trim() || null,
     source_link: document.getElementById('f-source-link').value.trim() || null,
@@ -731,7 +889,7 @@ async function saveIdea(){
   loadIdeas();
 }
 
-// ── Static UI init (filter dropdowns) ─────────────────────────────
+// ── Static UI init (filter + next-action dropdowns) ───────────────
 function initStaticUI(){
   document.getElementById('filter-status').innerHTML = '<option value="">All statuses</option>' +
     STATUSES.map(s=>`<option value="${s}">${s[0].toUpperCase()+s.slice(1)}</option>`).join('');
@@ -739,6 +897,8 @@ function initStaticUI(){
     PLATFORMS.map(p=>`<option value="${p.key}">${p.label}</option>`).join('');
   document.getElementById('filter-pillar').innerHTML = '<option value="">All pillars</option>' +
     PILLARS.map(p=>`<option value="${p.key}">${p.label}</option>`).join('');
+  document.getElementById('f-next-action').innerHTML = '<option value="">— none —</option>' +
+    NEXT_ACTIONS.map(a=>`<option value="${a}">${a}</option>`).join('');
 }
 initStaticUI();
 </script>

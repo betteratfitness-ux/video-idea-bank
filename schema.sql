@@ -38,6 +38,17 @@ create table if not exists video_ideas (
   -- {"youtube_long":true,"short_1":false,...}. Keeping this as jsonb instead
   -- of 9 separate columns makes it painless to add more checklist items later.
   repurpose    jsonb not null default '{}'::jsonb,
+  -- next_action: the single next physical step for this idea, driving the
+  -- "Today's Move" card. NULL means no next step has been set yet.
+  next_action  text check (next_action is null or next_action in (
+                 'Outline','Script','Record','Edit','Make Thumbnail',
+                 'Post YouTube','Pull Shorts','Post Facebook','Post Instagram',
+                 'Send Email','Review Results'
+               )),
+  -- later: a lightweight "snooze" flag for Inbox ideas you're not ready to
+  -- categorize yet. Keeps them out of the main Inbox triage list without
+  -- deleting them or forcing a pillar choice.
+  later        boolean not null default false,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -55,6 +66,18 @@ alter table video_ideas add column if not exists edited_clips_link text;
 alter table video_ideas add column if not exists final_export_link text;
 alter table video_ideas add column if not exists google_drive_folder_link text;
 alter table video_ideas add column if not exists repurpose jsonb not null default '{}'::jsonb;
+alter table video_ideas add column if not exists next_action text;
+alter table video_ideas add column if not exists later boolean not null default false;
+
+-- next_action CHECK constraint — dropped and re-added so this migrates
+-- cleanly even if the column already existed without the constraint
+alter table video_ideas drop constraint if exists video_ideas_next_action_check;
+alter table video_ideas add constraint video_ideas_next_action_check
+  check (next_action is null or next_action in (
+    'Outline','Script','Record','Edit','Make Thumbnail',
+    'Post YouTube','Pull Shorts','Post Facebook','Post Instagram',
+    'Send Email','Review Results'
+  ));
 
 -- Row Level Security: each user can only see and change their own rows
 alter table video_ideas enable row level security;
