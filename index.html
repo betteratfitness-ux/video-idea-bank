@@ -8,7 +8,7 @@
 <style>
   :root{
     --bg:#0a0a0c; --panel:#131316; --panel2:#1a1a1f; --border:#2a2a30;
-    --text:#e7e9ea; --sub:#9a9aa2; --accent:#f07820; --gold:#f0b030;
+    --text:#e7e9ea; --sub:#9a9aa2; --accent:#f07820; --gold:#f0b030; --green:#4ade80;
     --yt:#CC0000; --fb:#1877F2; --ig:#E1306C; --sub-c:#FF6719;
     --p1:#f87171; --p2:#38bdf8; --p3:#f0b030; --p4:#4ade80; --p5:#E1306C; --p6:#a5b4fc; --p7:#f07820;
   }
@@ -31,21 +31,39 @@
   .auth-toggle a{color:var(--accent);cursor:pointer;text-decoration:none;}
 
   #app{display:none;max-width:1000px;margin:0 auto;padding:20px 16px 60px;}
-  header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  header.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
   header.top h1{font-size:1.15rem;margin:0;}
   header.top .who{color:var(--sub);font-size:.8rem;}
+
+  /* Quick Add */
+  .quick-add{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:22px;}
+  .quick-add-row{display:flex;gap:8px;margin-bottom:8px;}
+  .quick-add-row input{flex:1;margin:0;}
+  .quick-add-row2{margin-bottom:8px;}
+  .quick-add-row2 textarea{margin:0;min-height:44px;}
+  .quick-add-row3{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .quick-add-row3 select{width:auto;margin:0;flex:0 0 auto;min-width:170px;}
+  .quick-add-row3 label{font-size:.82rem;color:var(--sub);display:flex;align-items:center;gap:5px;white-space:nowrap;}
+  .success-msg{color:var(--green);font-size:.82rem;margin-top:8px;min-height:1em;}
 
   .hero{background:linear-gradient(135deg,#1a120a,#161018);border:1px solid var(--accent);border-radius:16px;padding:20px 22px;margin-bottom:20px;}
   .hero .tag{color:var(--gold);font-size:.75rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
   .hero h2{margin:0 0 6px;font-size:1.3rem;}
   .hero .meta{color:var(--sub);font-size:.85rem;}
   .hero.empty{border-color:var(--border);background:var(--panel);}
+  .hero-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;}
 
   .section-title{font-size:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--sub);margin:26px 0 10px;display:flex;align-items:center;gap:8px;}
   .trending-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;}
   .trending-row .card{min-width:220px;}
 
-  .add-row{display:flex;justify-content:flex-end;margin-bottom:6px;}
+  .week-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+
+  .filter-bar{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 14px;}
+  .filter-bar input{flex:1;min-width:160px;margin:0;}
+  .filter-bar select{width:auto;margin:0;min-width:130px;}
+
+  .add-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
 
   .pillar-block{margin-bottom:22px;border-left:3px solid var(--pc);padding-left:14px;}
   .pillar-block h3{font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
@@ -60,6 +78,9 @@
   .stars{cursor:pointer;letter-spacing:2px;font-size:.9rem;color:var(--gold);margin-bottom:8px;}
   .stars span{opacity:.3;}
   .stars span.on{opacity:1;}
+  .score-badge{display:inline-block;cursor:default;letter-spacing:normal;font-size:.7rem;color:var(--sub);background:var(--panel2);border-radius:20px;padding:2px 8px;margin-left:4px;vertical-align:middle;}
+  .posted-link{display:inline-block;margin-bottom:8px;font-size:.78rem;color:var(--accent);text-decoration:none;}
+  .posted-link:hover{text-decoration:underline;}
   .card .row{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:8px;}
   .card select{margin:0;padding:5px 8px;font-size:.75rem;width:auto;flex:1;}
   .trend-toggle{font-size:.75rem;border:1px solid var(--border);background:transparent;color:var(--sub);border-radius:20px;padding:4px 9px;}
@@ -67,6 +88,7 @@
   .del{position:absolute;top:10px;right:10px;background:transparent;border:none;color:var(--sub);font-size:1rem;line-height:1;padding:2px;}
   .del:hover{color:#f87171;}
   .empty-msg{color:var(--sub);font-size:.85rem;padding:10px 0;}
+  .empty-big{text-align:center;color:var(--sub);padding:36px 20px;font-size:.9rem;background:var(--panel);border:1px dashed var(--border);border-radius:14px;}
 
   .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:16px;z-index:50;}
   .overlay.show{display:flex;}
@@ -112,14 +134,41 @@
     </div>
   </header>
 
+  <!-- Quick Add -->
+  <div class="quick-add">
+    <div class="quick-add-row">
+      <input id="qa-title" placeholder="New video idea title..." onkeydown="if(event.key==='Enter')quickAdd()" />
+      <button class="btn" onclick="quickAdd()">Add Idea</button>
+    </div>
+    <div class="quick-add-row2">
+      <textarea id="qa-notes" placeholder="Notes / angle (optional)"></textarea>
+    </div>
+    <div class="quick-add-row3">
+      <select id="qa-pillar"></select>
+      <div class="chip-row" id="qa-platforms"></div>
+      <div class="stars" id="qa-stars" style="margin:0;"></div>
+      <label><input type="checkbox" id="qa-trending" style="width:auto;margin:0;" />Trending</label>
+    </div>
+    <div class="success-msg" id="qa-success"></div>
+  </div>
+
   <div id="hero"></div>
+
+  <div class="section-title">📅 This Week Focus</div>
+  <div class="week-grid" id="week-grid"></div>
 
   <div class="section-title">🔥 Trending Possibilities</div>
   <div class="trending-row" id="trending-row"></div>
 
+  <div class="filter-bar">
+    <input id="filter-search" placeholder="Search title or notes..." oninput="applyFilters()" />
+    <select id="filter-status" onchange="applyFilters()"></select>
+    <select id="filter-platform" onchange="applyFilters()"></select>
+    <select id="filter-pillar" onchange="applyFilters()"></select>
+  </div>
+
   <div class="add-row">
-    <button class="btn ghost small" onclick="importStarterIdeas()">Import Planned Videos</button>
-    <button class="btn" onclick="openForm()" style="margin-left:8px;">+ Add Video Idea</button>
+    <button class="btn ghost small" onclick="importPlannedVideos()">Import Planned Videos</button>
   </div>
 
   <div id="pillars"></div>
@@ -127,7 +176,7 @@
 
 <div class="overlay" id="overlay">
   <div class="modal">
-    <h2 id="modal-title">New Video Idea</h2>
+    <h2>Edit Video Idea</h2>
     <div class="field">
       <label>Title</label>
       <input id="f-title" placeholder="e.g. 'Why Monday restarts fail'" />
@@ -149,6 +198,23 @@
       <div class="stars" id="f-stars" style="font-size:1.3rem;"></div>
     </div>
     <div class="field">
+      <label>Status</label>
+      <select id="f-status">
+        <option value="idea">Idea</option>
+        <option value="scripted">Scripted</option>
+        <option value="filmed">Filmed</option>
+        <option value="posted">Posted</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Planned date</label>
+      <input type="date" id="f-planned-date" />
+    </div>
+    <div class="field">
+      <label>Posted URL</label>
+      <input type="url" id="f-posted-url" placeholder="https://..." />
+    </div>
+    <div class="field">
       <label><input type="checkbox" id="f-trending" style="width:auto;margin:0 6px 0 0;" />Trending right now</label>
     </div>
     <div class="modal-actions">
@@ -161,20 +227,22 @@
 <script>
 // ── Configure your Supabase project here ──────────────────────────────
 // Supabase dashboard → Project Settings → API
+// IMPORTANT: use only the anon/publishable key here. Never put a service_role/secret key in frontend code.
 const SUPABASE_URL = 'https://raceuxrfgaiueiobgrph.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_4uBBerFPMw5N5U8HAd1OEw_clWP7Zjw';
 // ────────────────────────────────────────────────────────────────────
 
-if (SUPABASE_URL.startsWith('YOUR_') || SUPABASE_ANON_KEY.startsWith('YOUR_')) {
+if (SUPABASE_URL.startsWith('YOUR_') || SUPABASE_ANON_KEY.startsWith('YOUR_') || SUPABASE_URL.includes('PASTE_') || SUPABASE_ANON_KEY.includes('PASTE_')) {
   document.body.innerHTML = `<div style="max-width:480px;margin:80px auto;padding:24px;font-family:sans-serif;background:#131316;color:#e7e9ea;border:1px solid #2a2a30;border-radius:12px;">
     <h2 style="margin-top:0;">Setup needed</h2>
-    <p>Open <code>index.html</code> and replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; tag with your Supabase project's values (Project Settings → API).</p>
+    <p>Add your Supabase URL and anon key to the config section — open <code>index.html</code> and replace <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> near the top of the &lt;script&gt; tag with your Supabase project's values (Project Settings → API).</p>
   </div>`;
   throw new Error('Supabase not configured — see on-page instructions.');
 }
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// ── Fixed Better Fitness pillars (not user-editable yet) ─────────────
 const PILLARS = [
   { key:'stop_starting_over', label:'Stop Starting Over', color:'var(--p1)', weight:10 },
   { key:'workout_systems',    label:'Real-Life Workout Systems', color:'var(--p2)', weight:8 },
@@ -187,17 +255,23 @@ const PILLARS = [
 const PILLAR_MAP = Object.fromEntries(PILLARS.map(p=>[p.key,p]));
 
 const PLATFORMS = [
-  { key:'youtube', label:'YouTube', color:'var(--yt)' },
-  { key:'shorts',  label:'YT Shorts', color:'var(--yt)' },
-  { key:'facebook',label:'Facebook', color:'var(--fb)' },
+  { key:'youtube',  label:'YouTube', color:'var(--yt)' },
+  { key:'shorts',   label:'YT Shorts', color:'var(--yt)' },
+  { key:'facebook', label:'Facebook', color:'var(--fb)' },
   { key:'instagram',label:'Instagram', color:'var(--ig)' },
-  { key:'substack',label:'Substack', color:'var(--sub-c)' },
+  { key:'substack', label:'Substack', color:'var(--sub-c)' },
 ];
 const PLATFORM_MAP = Object.fromEntries(PLATFORMS.map(p=>[p.key,p]));
 
 const STATUSES = ['idea','scripted','filmed','posted'];
+const TRENDING_BONUS = 10;
 
-const STARTER_IDEAS = [
+// ── Bulk import ────────────────────────────────────────────────────
+// Add more planned videos here anytime — paste additional objects into this array.
+// Shape: { title, notes, pillar: <one of the 7 pillar keys above>, platforms: [<platform keys above>], importance: 1-5, trending: true/false }
+// Pillar keys:   stop_starting_over, workout_systems, daily_stars, simple_food, tenisha_reset, busy_parent, faith_family
+// Platform keys: youtube, shorts, facebook, instagram, substack
+const PLANNED_VIDEO_IMPORTS = [
   {
     title: "I Lost 70 Pounds Twice: This Time I Am Telling the Whole Truth",
     notes: "Video 1 of the First 3 Tenisha Videos series. Origin story — restart viewer feels seen. Roland interviews Tenisha with full word-for-word script ready to record.",
@@ -228,14 +302,18 @@ const STARTER_IDEAS = [
     notes: "Direct-to-camera cutdown from the '5 Things I Stopped Doing' interview — record same session, no extra filming day needed. Script ready.",
     pillar: "workout_systems", platforms: ["youtube","shorts","facebook","instagram"], importance: 3, trending: false,
   },
+  // Example placeholder — copy this shape to add your next planned video:
+  // { title: "Example Title", notes: "Hook / angle", pillar: "workout_systems", platforms: ["youtube","facebook"], importance: 3, trending: false },
 ];
 
-async function importStarterIdeas(){
-  const existingTitles = new Set(ideas.map(i => i.title));
-  const toInsert = STARTER_IDEAS.filter(i => !existingTitles.has(i.title));
-  if (!toInsert.length) { alert('These are already in your idea bank.'); return; }
+async function importPlannedVideos(){
+  const existingTitles = new Set(ideas.map(i => i.title.trim().toLowerCase()));
+  const toInsert = PLANNED_VIDEO_IMPORTS.filter(i => !existingTitles.has(i.title.trim().toLowerCase()));
+  const skipped = PLANNED_VIDEO_IMPORTS.length - toInsert.length;
+  if (!toInsert.length) { alert(`Nothing to import — all ${PLANNED_VIDEO_IMPORTS.length} are already in your idea bank.`); return; }
   const { error } = await sb.from('video_ideas').insert(toInsert);
   if (error) { alert('Could not import: ' + error.message); return; }
+  alert(`Added ${toInsert.length} video${toInsert.length===1?'':'s'}.${skipped ? ` Skipped ${skipped} already in your bank.` : ''}`);
   loadIdeas();
 }
 
@@ -243,6 +321,9 @@ let ideas = [];
 let editingId = null;
 let formPlatforms = new Set();
 let formStars = 3;
+let qaPlatforms = new Set();
+let qaStars = 3;
+let filterState = { search:'', status:'', platform:'', pillar:'' };
 
 // ── Auth ───────────────────────────────────────────────────────────
 function showSignUp(){ document.getElementById('signin-form').style.display='none'; document.getElementById('signup-form').style.display='block'; }
@@ -294,12 +375,17 @@ async function loadIdeas(){
 
 function score(idea){
   const pw = PILLAR_MAP[idea.pillar]?.weight || 0;
-  return pw + idea.importance*4 + (idea.trending?6:0);
+  return pw + idea.importance*4 + (idea.trending ? TRENDING_BONUS : 0);
+}
+
+function openIdeasSorted(){
+  return ideas.filter(i => i.status !== 'posted').sort((a,b) => score(b) - score(a));
 }
 
 // ── Render ─────────────────────────────────────────────────────────
 function render(){
   renderHero();
+  renderWeekFocus();
   renderTrending();
   renderPillars();
 }
@@ -312,45 +398,95 @@ function platformBadges(idea){
   }).join('');
 }
 
-function starHtml(n, size){
+function starHtml(n){
   let h = '';
   for (let i=1;i<=5;i++) h += `<span class="${i<=n?'on':''}">★</span>`;
   return h;
 }
 
 function renderHero(){
-  const candidates = ideas.filter(i => i.status !== 'posted');
   const el = document.getElementById('hero');
-  if (!candidates.length){ el.innerHTML = `<div class="hero empty"><div class="tag">Next Video To Make</div><h2>No open ideas yet</h2><div class="meta">Add your first idea below.</div></div>`; return; }
-  const top = candidates.slice().sort((a,b)=>score(b)-score(a))[0];
+  const open = openIdeasSorted();
+  if (!open.length){ el.innerHTML = `<div class="hero empty"><div class="tag">Next Video To Make</div><h2>No open ideas yet</h2><div class="meta">Add your first idea with Quick Add above.</div></div>`; return; }
+  const top = open[0];
   const pillar = PILLAR_MAP[top.pillar];
   el.innerHTML = `
     <div class="hero">
       <div class="tag">🎯 Next Video To Make</div>
       <h2>${escapeHtml(top.title)}</h2>
-      <div class="meta">${pillar.label} · ${platformBadges(top)} · ${starHtml(top.importance)} ${top.trending?'· 🔥 trending':''}</div>
+      <div class="meta">${pillar.label} · ${platformBadges(top)} · ${starHtml(top.importance)} ${top.trending?'· 🔥 trending':''} <span class="score-badge">Score ${score(top)}</span></div>
+      <div class="meta" style="margin-top:6px;">Status: ${top.status[0].toUpperCase()+top.status.slice(1)}</div>
+      <div class="hero-actions">
+        <button class="btn ghost small" onclick="setStatus('${top.id}','scripted')">Mark Scripted</button>
+        <button class="btn ghost small" onclick="setStatus('${top.id}','filmed')">Mark Filmed</button>
+        <button class="btn ghost small" onclick="setStatus('${top.id}','posted')">Mark Posted</button>
+      </div>
     </div>`;
+}
+
+function renderWeekFocus(){
+  const el = document.getElementById('week-grid');
+  const rest = openIdeasSorted().slice(1, 4);
+  if (!rest.length){ el.innerHTML = `<div class="empty-msg">Nothing else queued up yet.</div>`; return; }
+  el.innerHTML = rest.map(cardHtml).join('');
 }
 
 function renderTrending(){
   const row = document.getElementById('trending-row');
-  const list = ideas.filter(i=>i.trending && i.status!=='posted');
-  if (!list.length){ row.innerHTML = `<div class="empty-msg">Mark an idea "Trending" to see it here.</div>`; return; }
+  const list = ideas.filter(i=>i.trending && i.status!=='posted').sort((a,b)=>score(b)-score(a));
+  if (!list.length){ row.innerHTML = `<div class="empty-msg">No trending ideas flagged yet. Toggle 🔥 on a card to add one here.</div>`; return; }
   row.innerHTML = list.map(cardHtml).join('');
+}
+
+function matchesFilters(idea){
+  if (filterState.search) {
+    const s = filterState.search.toLowerCase();
+    const hay = (idea.title + ' ' + (idea.notes||'')).toLowerCase();
+    if (!hay.includes(s)) return false;
+  }
+  if (filterState.status && idea.status !== filterState.status) return false;
+  if (filterState.platform && !(idea.platforms||[]).includes(filterState.platform)) return false;
+  if (filterState.pillar && idea.pillar !== filterState.pillar) return false;
+  return true;
+}
+
+function applyFilters(){
+  filterState.search = document.getElementById('filter-search').value.trim();
+  filterState.status = document.getElementById('filter-status').value;
+  filterState.platform = document.getElementById('filter-platform').value;
+  filterState.pillar = document.getElementById('filter-pillar').value;
+  renderPillars();
 }
 
 function renderPillars(){
   const wrap = document.getElementById('pillars');
-  wrap.innerHTML = PILLARS.map(p=>{
-    const list = ideas.filter(i=>i.pillar===p.key);
-    return `
-      <div class="pillar-block" style="--pc:${p.color}">
-        <h3>${p.label} <span class="count">(${list.length})</span></h3>
-        <div class="cards">
-          ${list.length ? list.map(cardHtml).join('') : '<div class="empty-msg">No ideas yet.</div>'}
-        </div>
-      </div>`;
-  }).join('');
+
+  if (!ideas.length){
+    wrap.innerHTML = `<div class="empty-big">No ideas yet. Use Quick Add above to capture your first one.</div>`;
+    return;
+  }
+
+  const filtersActive = !!(filterState.search || filterState.status || filterState.platform || filterState.pillar);
+  let totalShown = 0;
+
+  const blocks = PILLARS
+    .filter(p => !filterState.pillar || filterState.pillar === p.key)
+    .map(p=>{
+      const list = ideas.filter(i => i.pillar === p.key && matchesFilters(i));
+      totalShown += list.length;
+      if (filtersActive && !list.length) return '';
+      return `
+        <div class="pillar-block" style="--pc:${p.color}">
+          <h3>${p.label} <span class="count">(${list.length})</span></h3>
+          <div class="cards">
+            ${list.length ? list.map(cardHtml).join('') : '<div class="empty-msg">No ideas yet.</div>'}
+          </div>
+        </div>`;
+    }).join('');
+
+  wrap.innerHTML = (filtersActive && totalShown === 0)
+    ? `<div class="empty-big">No ideas match your search or filters.</div>`
+    : blocks;
 }
 
 function cardHtml(idea){
@@ -363,7 +499,9 @@ function cardHtml(idea){
       <div class="badges">${platformBadges(idea)}</div>
       <div class="stars">
         ${[1,2,3,4,5].map(n=>`<span class="${n<=idea.importance?'on':''}" onclick="setImportance('${idea.id}',${n})">★</span>`).join('')}
+        <span class="score-badge">Score ${score(idea)}</span>
       </div>
+      ${idea.posted_url ? `<a class="posted-link" href="${escapeHtml(idea.posted_url)}" target="_blank" rel="noopener">▶ View posted</a>` : ''}
       <div class="row">
         <select onchange="setStatus('${idea.id}', this.value)">${statusOptions}</select>
         <button class="trend-toggle ${idea.trending?'on':''}" onclick="toggleTrending('${idea.id}')">🔥</button>
@@ -395,43 +533,84 @@ async function deleteIdea(id){
   loadIdeas();
 }
 
-// ── Form ───────────────────────────────────────────────────────────
-function openForm(id){
-  editingId = id || null;
-  const idea = id ? ideas.find(i=>i.id===id) : null;
+// ── Quick Add ──────────────────────────────────────────────────────
+function renderPlatformChips(containerId, selectedSet, toggleFn){
+  document.getElementById(containerId).innerHTML = PLATFORMS.map(p=>
+    `<button type="button" class="chip ${selectedSet.has(p.key)?'on':''}" onclick="${toggleFn}('${p.key}')">${p.label}</button>`
+  ).join('');
+}
+function renderStars(containerId, value, setFn){
+  document.getElementById(containerId).innerHTML = [1,2,3,4,5].map(n=>
+    `<span class="${n<=value?'on':''}" onclick="${setFn}(${n})">★</span>`
+  ).join('');
+}
+function toggleQaPlatform(key){
+  if (qaPlatforms.has(key)) qaPlatforms.delete(key); else qaPlatforms.add(key);
+  renderPlatformChips('qa-platforms', qaPlatforms, 'toggleQaPlatform');
+}
+function setQaStars(n){ qaStars = n; renderStars('qa-stars', qaStars, 'setQaStars'); }
 
-  document.getElementById('modal-title').textContent = idea ? 'Edit Video Idea' : 'New Video Idea';
-  document.getElementById('f-title').value = idea?.title || '';
-  document.getElementById('f-notes').value = idea?.notes || '';
-  document.getElementById('f-trending').checked = idea?.trending || false;
+async function quickAdd(){
+  const titleEl = document.getElementById('qa-title');
+  const title = titleEl.value.trim();
+  if (!title) { titleEl.focus(); return; }
+  const payload = {
+    title,
+    notes: document.getElementById('qa-notes').value.trim(),
+    pillar: document.getElementById('qa-pillar').value,
+    platforms: Array.from(qaPlatforms),
+    importance: qaStars,
+    trending: document.getElementById('qa-trending').checked,
+  };
+  const { error } = await sb.from('video_ideas').insert(payload);
+  if (error) { alert('Could not add idea: ' + error.message); return; }
+
+  titleEl.value = '';
+  document.getElementById('qa-notes').value = '';
+  document.getElementById('qa-pillar').selectedIndex = 0;
+  document.getElementById('qa-trending').checked = false;
+  qaPlatforms = new Set();
+  renderPlatformChips('qa-platforms', qaPlatforms, 'toggleQaPlatform');
+  qaStars = 3;
+  renderStars('qa-stars', qaStars, 'setQaStars');
+
+  const msg = document.getElementById('qa-success');
+  msg.textContent = 'Added ✓';
+  setTimeout(()=>{ msg.textContent = ''; }, 2000);
+
+  loadIdeas();
+}
+
+// ── Deep edit modal ────────────────────────────────────────────────
+function openForm(id){
+  editingId = id;
+  const idea = ideas.find(i=>i.id===id);
+  if (!idea) return;
+
+  document.getElementById('f-title').value = idea.title || '';
+  document.getElementById('f-notes').value = idea.notes || '';
+  document.getElementById('f-trending').checked = idea.trending || false;
+  document.getElementById('f-status').value = idea.status;
+  document.getElementById('f-planned-date').value = idea.planned_date || '';
+  document.getElementById('f-posted-url').value = idea.posted_url || '';
 
   const pillarSel = document.getElementById('f-pillar');
-  pillarSel.innerHTML = PILLARS.map(p=>`<option value="${p.key}" ${idea?.pillar===p.key?'selected':''}>${p.label}</option>`).join('');
+  pillarSel.innerHTML = PILLARS.map(p=>`<option value="${p.key}" ${idea.pillar===p.key?'selected':''}>${p.label}</option>`).join('');
 
-  formPlatforms = new Set(idea?.platforms || []);
-  document.getElementById('f-platforms').innerHTML = PLATFORMS.map(p=>
-    `<button type="button" class="chip ${formPlatforms.has(p.key)?'on':''}" onclick="togglePlatformChip('${p.key}')">${p.label}</button>`
-  ).join('');
+  formPlatforms = new Set(idea.platforms || []);
+  renderPlatformChips('f-platforms', formPlatforms, 'toggleModalPlatform');
 
-  formStars = idea?.importance || 3;
-  renderFormStars();
+  formStars = idea.importance || 3;
+  renderStars('f-stars', formStars, 'setFormStars');
 
   document.getElementById('overlay').classList.add('show');
 }
 
-function togglePlatformChip(key){
+function toggleModalPlatform(key){
   if (formPlatforms.has(key)) formPlatforms.delete(key); else formPlatforms.add(key);
-  document.getElementById('f-platforms').innerHTML = PLATFORMS.map(p=>
-    `<button type="button" class="chip ${formPlatforms.has(p.key)?'on':''}" onclick="togglePlatformChip('${p.key}')">${p.label}</button>`
-  ).join('');
+  renderPlatformChips('f-platforms', formPlatforms, 'toggleModalPlatform');
 }
-
-function renderFormStars(){
-  document.getElementById('f-stars').innerHTML = [1,2,3,4,5].map(n=>
-    `<span class="${n<=formStars?'on':''}" onclick="setFormStars(${n})">★</span>`
-  ).join('');
-}
-function setFormStars(n){ formStars = n; renderFormStars(); }
+function setFormStars(n){ formStars = n; renderStars('f-stars', formStars, 'setFormStars'); }
 
 function closeForm(){
   document.getElementById('overlay').classList.remove('show');
@@ -447,14 +626,30 @@ async function saveIdea(){
     platforms: Array.from(formPlatforms),
     importance: formStars,
     trending: document.getElementById('f-trending').checked,
+    status: document.getElementById('f-status').value,
+    planned_date: document.getElementById('f-planned-date').value || null,
+    posted_url: document.getElementById('f-posted-url').value.trim() || null,
   };
-  const { error } = editingId
-    ? await sb.from('video_ideas').update(payload).eq('id', editingId)
-    : await sb.from('video_ideas').insert(payload);
+  const { error } = await sb.from('video_ideas').update(payload).eq('id', editingId);
   if (error) { alert('Could not save: ' + error.message); return; }
   closeForm();
   loadIdeas();
 }
+
+// ── Static UI init (pillar/platform/status dropdowns, quick-add defaults) ──
+function initStaticUI(){
+  document.getElementById('qa-pillar').innerHTML = PILLARS.map(p=>`<option value="${p.key}">${p.label}</option>`).join('');
+  renderPlatformChips('qa-platforms', qaPlatforms, 'toggleQaPlatform');
+  renderStars('qa-stars', qaStars, 'setQaStars');
+
+  document.getElementById('filter-status').innerHTML = '<option value="">All statuses</option>' +
+    STATUSES.map(s=>`<option value="${s}">${s[0].toUpperCase()+s.slice(1)}</option>`).join('');
+  document.getElementById('filter-platform').innerHTML = '<option value="">All platforms</option>' +
+    PLATFORMS.map(p=>`<option value="${p.key}">${p.label}</option>`).join('');
+  document.getElementById('filter-pillar').innerHTML = '<option value="">All pillars</option>' +
+    PILLARS.map(p=>`<option value="${p.key}">${p.label}</option>`).join('');
+}
+initStaticUI();
 </script>
 </body>
 </html>
