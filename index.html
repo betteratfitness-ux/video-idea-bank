@@ -65,6 +65,25 @@
 
   .add-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
 
+  /* Inbox */
+  .inbox-block{margin-bottom:22px;border-left:3px dashed var(--sub);padding-left:14px;}
+  .inbox-block h3{font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+  .inbox-block h3 .count{color:var(--sub);font-weight:400;font-size:.8rem;}
+  .inbox-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px;position:relative;}
+  .inbox-card .title{font-weight:600;font-size:.95rem;margin-bottom:6px;padding-right:20px;cursor:pointer;}
+  .inbox-card .notes{color:var(--sub);font-size:.8rem;margin-bottom:8px;white-space:pre-wrap;}
+  .inbox-card .row{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:8px;}
+  .link-badge{display:inline-block;font-size:.68rem;color:var(--sub);background:var(--panel2);border-radius:20px;padding:2px 8px;}
+  .repurpose-badge{display:inline-block;font-size:.7rem;color:var(--sub);background:var(--panel2);border-radius:20px;padding:2px 8px;margin-left:4px;}
+
+  /* Collapsible groups in the modal */
+  details.collapse{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:12px;}
+  details.collapse summary{cursor:pointer;font-size:.85rem;font-weight:600;color:var(--text);}
+  details.collapse[open] summary{margin-bottom:10px;}
+  .checklist{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
+  .checklist label{font-size:.8rem;display:flex;align-items:center;gap:6px;color:var(--text);}
+  .checklist input{width:auto;margin:0;}
+
   .pillar-block{margin-bottom:22px;border-left:3px solid var(--pc);padding-left:14px;}
   .pillar-block h3{font-size:1rem;margin:0 0 10px;display:flex;align-items:center;gap:8px;}
   .pillar-block h3 .count{color:var(--sub);font-weight:400;font-size:.8rem;}
@@ -134,23 +153,23 @@
     </div>
   </header>
 
-  <!-- Quick Add -->
+  <!-- Inbox Capture -->
   <div class="quick-add">
     <div class="quick-add-row">
-      <input id="qa-title" placeholder="New video idea title..." onkeydown="if(event.key==='Enter')quickAdd()" />
-      <button class="btn" onclick="quickAdd()">Add Idea</button>
+      <input id="qa-title" placeholder="Capture a video idea..." onkeydown="if(event.key==='Enter')quickAdd()" />
+      <button class="btn" onclick="quickAdd()">Add to Inbox</button>
     </div>
     <div class="quick-add-row2">
-      <textarea id="qa-notes" placeholder="Notes / angle (optional)"></textarea>
+      <textarea id="qa-notes" placeholder="Notes (optional)"></textarea>
     </div>
-    <div class="quick-add-row3">
-      <select id="qa-pillar"></select>
-      <div class="chip-row" id="qa-platforms"></div>
-      <div class="stars" id="qa-stars" style="margin:0;"></div>
-      <label><input type="checkbox" id="qa-trending" style="width:auto;margin:0;" />Trending</label>
+    <div class="quick-add-row2" style="margin-bottom:0;">
+      <input id="qa-source-link" placeholder="Source link (optional) — where this idea came from" />
     </div>
     <div class="success-msg" id="qa-success"></div>
   </div>
+
+  <div class="section-title">📥 Inbox</div>
+  <div id="inbox-list"></div>
 
   <div id="hero"></div>
 
@@ -217,6 +236,23 @@
     <div class="field">
       <label><input type="checkbox" id="f-trending" style="width:auto;margin:0 6px 0 0;" />Trending right now</label>
     </div>
+
+    <details class="collapse">
+      <summary>📎 Source &amp; Asset Links</summary>
+      <div class="field"><label>Source link</label><input type="url" id="f-source-link" placeholder="https://..." /></div>
+      <div class="field"><label>Script</label><input type="url" id="f-script-link" placeholder="https://..." /></div>
+      <div class="field"><label>Canva thumbnail</label><input type="url" id="f-canva-link" placeholder="https://..." /></div>
+      <div class="field"><label>Raw footage</label><input type="url" id="f-raw-footage-link" placeholder="https://..." /></div>
+      <div class="field"><label>Edited clips</label><input type="url" id="f-edited-clips-link" placeholder="https://..." /></div>
+      <div class="field"><label>Final export</label><input type="url" id="f-final-export-link" placeholder="https://..." /></div>
+      <div class="field" style="margin-bottom:0;"><label>Google Drive folder</label><input type="url" id="f-drive-link" placeholder="https://..." /></div>
+    </details>
+
+    <details class="collapse">
+      <summary>✅ Repurposing Checklist</summary>
+      <div class="checklist" id="f-repurpose"></div>
+    </details>
+
     <div class="modal-actions">
       <button class="btn ghost full" onclick="closeForm()">Cancel</button>
       <button class="btn full" onclick="saveIdea()">Save</button>
@@ -265,6 +301,18 @@ const PLATFORM_MAP = Object.fromEntries(PLATFORMS.map(p=>[p.key,p]));
 
 const STATUSES = ['idea','scripted','filmed','posted'];
 const TRENDING_BONUS = 10;
+
+const REPURPOSE_ITEMS = [
+  { key:'youtube_long', label:'YouTube long-form posted' },
+  { key:'short_1',      label:'YouTube Short 1' },
+  { key:'short_2',      label:'YouTube Short 2' },
+  { key:'short_3',      label:'YouTube Short 3' },
+  { key:'ig_reel',      label:'Instagram Reel' },
+  { key:'fb_post',      label:'Facebook Page post' },
+  { key:'fb_group',     label:'Facebook Group prompt' },
+  { key:'email_sent',   label:'Email sent' },
+  { key:'pinned_cta',   label:'Pinned comment / CTA posted' },
+];
 
 // ── Bulk import ────────────────────────────────────────────────────
 // Add more planned videos here anytime — paste additional objects into this array.
@@ -321,8 +369,6 @@ let ideas = [];
 let editingId = null;
 let formPlatforms = new Set();
 let formStars = 3;
-let qaPlatforms = new Set();
-let qaStars = 3;
 let filterState = { search:'', status:'', platform:'', pillar:'' };
 
 // ── Auth ───────────────────────────────────────────────────────────
@@ -379,11 +425,14 @@ function score(idea){
 }
 
 function openIdeasSorted(){
-  return ideas.filter(i => i.status !== 'posted').sort((a,b) => score(b) - score(a));
+  // Uncategorized (Inbox) ideas are excluded — they need a pillar before
+  // they're actionable enough to recommend as "next video to make."
+  return ideas.filter(i => i.status !== 'posted' && i.pillar).sort((a,b) => score(b) - score(a));
 }
 
 // ── Render ─────────────────────────────────────────────────────────
 function render(){
+  renderInbox();
   renderHero();
   renderWeekFocus();
   renderTrending();
@@ -433,9 +482,39 @@ function renderWeekFocus(){
 
 function renderTrending(){
   const row = document.getElementById('trending-row');
-  const list = ideas.filter(i=>i.trending && i.status!=='posted').sort((a,b)=>score(b)-score(a));
+  const list = ideas.filter(i=>i.trending && i.status!=='posted' && i.pillar).sort((a,b)=>score(b)-score(a));
   if (!list.length){ row.innerHTML = `<div class="empty-msg">No trending ideas flagged yet. Toggle 🔥 on a card to add one here.</div>`; return; }
   row.innerHTML = list.map(cardHtml).join('');
+}
+
+function hasAnyLink(idea){
+  return !!(idea.source_link || idea.script_link || idea.canva_thumbnail_link ||
+    idea.raw_footage_link || idea.edited_clips_link || idea.final_export_link || idea.google_drive_folder_link);
+}
+
+function repurposeCount(idea){
+  const rep = idea.repurpose || {};
+  return REPURPOSE_ITEMS.filter(item => rep[item.key]).length;
+}
+
+function renderInbox(){
+  const el = document.getElementById('inbox-list');
+  const list = ideas.filter(i => !i.pillar).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  if (!list.length){ el.innerHTML = `<div class="empty-msg">Inbox is empty — everything's categorized.</div>`; return; }
+  el.innerHTML = `<div class="inbox-block"><div class="cards">${list.map(inboxCardHtml).join('')}</div></div>`;
+}
+
+function inboxCardHtml(idea){
+  return `
+    <div class="inbox-card">
+      <button class="del" onclick="deleteIdea('${idea.id}')" title="Delete">✕</button>
+      <div class="title" onclick="openForm('${idea.id}')">${escapeHtml(idea.title)}</div>
+      ${idea.notes ? `<div class="notes">${escapeHtml(idea.notes)}</div>` : ''}
+      ${idea.source_link ? `<a class="posted-link" href="${escapeHtml(idea.source_link)}" target="_blank" rel="noopener">🔗 Source</a>` : ''}
+      <div class="row">
+        <button class="btn ghost small" onclick="openForm('${idea.id}')">Categorize →</button>
+      </div>
+    </div>`;
 }
 
 function matchesFilters(idea){
@@ -500,6 +579,8 @@ function cardHtml(idea){
       <div class="stars">
         ${[1,2,3,4,5].map(n=>`<span class="${n<=idea.importance?'on':''}" onclick="setImportance('${idea.id}',${n})">★</span>`).join('')}
         <span class="score-badge">Score ${score(idea)}</span>
+        ${hasAnyLink(idea) ? `<span class="link-badge">🔗 links</span>` : ''}
+        ${repurposeCount(idea) > 0 ? `<span class="repurpose-badge">Repurposed ${repurposeCount(idea)}/${REPURPOSE_ITEMS.length}</span>` : ''}
       </div>
       ${idea.posted_url ? `<a class="posted-link" href="${escapeHtml(idea.posted_url)}" target="_blank" rel="noopener">▶ View posted</a>` : ''}
       <div class="row">
@@ -544,38 +625,27 @@ function renderStars(containerId, value, setFn){
     `<span class="${n<=value?'on':''}" onclick="${setFn}(${n})">★</span>`
   ).join('');
 }
-function toggleQaPlatform(key){
-  if (qaPlatforms.has(key)) qaPlatforms.delete(key); else qaPlatforms.add(key);
-  renderPlatformChips('qa-platforms', qaPlatforms, 'toggleQaPlatform');
-}
-function setQaStars(n){ qaStars = n; renderStars('qa-stars', qaStars, 'setQaStars'); }
-
 async function quickAdd(){
   const titleEl = document.getElementById('qa-title');
   const title = titleEl.value.trim();
   if (!title) { titleEl.focus(); return; }
+  // Inbox capture: title, notes, source link only. No pillar, platforms,
+  // importance, or trending — those get set later when the idea is
+  // categorized out of the Inbox. Every other column uses its table default.
   const payload = {
     title,
     notes: document.getElementById('qa-notes').value.trim(),
-    pillar: document.getElementById('qa-pillar').value,
-    platforms: Array.from(qaPlatforms),
-    importance: qaStars,
-    trending: document.getElementById('qa-trending').checked,
+    source_link: document.getElementById('qa-source-link').value.trim() || null,
   };
   const { error } = await sb.from('video_ideas').insert(payload);
   if (error) { alert('Could not add idea: ' + error.message); return; }
 
   titleEl.value = '';
   document.getElementById('qa-notes').value = '';
-  document.getElementById('qa-pillar').selectedIndex = 0;
-  document.getElementById('qa-trending').checked = false;
-  qaPlatforms = new Set();
-  renderPlatformChips('qa-platforms', qaPlatforms, 'toggleQaPlatform');
-  qaStars = 3;
-  renderStars('qa-stars', qaStars, 'setQaStars');
+  document.getElementById('qa-source-link').value = '';
 
   const msg = document.getElementById('qa-success');
-  msg.textContent = 'Added ✓';
+  msg.textContent = 'Added to Inbox ✓';
   setTimeout(()=>{ msg.textContent = ''; }, 2000);
 
   loadIdeas();
@@ -593,15 +663,28 @@ function openForm(id){
   document.getElementById('f-status').value = idea.status;
   document.getElementById('f-planned-date').value = idea.planned_date || '';
   document.getElementById('f-posted-url').value = idea.posted_url || '';
+  document.getElementById('f-source-link').value = idea.source_link || '';
+  document.getElementById('f-script-link').value = idea.script_link || '';
+  document.getElementById('f-canva-link').value = idea.canva_thumbnail_link || '';
+  document.getElementById('f-raw-footage-link').value = idea.raw_footage_link || '';
+  document.getElementById('f-edited-clips-link').value = idea.edited_clips_link || '';
+  document.getElementById('f-final-export-link').value = idea.final_export_link || '';
+  document.getElementById('f-drive-link').value = idea.google_drive_folder_link || '';
 
   const pillarSel = document.getElementById('f-pillar');
-  pillarSel.innerHTML = PILLARS.map(p=>`<option value="${p.key}" ${idea.pillar===p.key?'selected':''}>${p.label}</option>`).join('');
+  pillarSel.innerHTML = '<option value="">— Uncategorized (Inbox) —</option>' +
+    PILLARS.map(p=>`<option value="${p.key}" ${idea.pillar===p.key?'selected':''}>${p.label}</option>`).join('');
 
   formPlatforms = new Set(idea.platforms || []);
   renderPlatformChips('f-platforms', formPlatforms, 'toggleModalPlatform');
 
   formStars = idea.importance || 3;
   renderStars('f-stars', formStars, 'setFormStars');
+
+  const rep = idea.repurpose || {};
+  document.getElementById('f-repurpose').innerHTML = REPURPOSE_ITEMS.map(item =>
+    `<label><input type="checkbox" id="f-rep-${item.key}" ${rep[item.key] ? 'checked' : ''} />${item.label}</label>`
+  ).join('');
 
   document.getElementById('overlay').classList.add('show');
 }
@@ -619,16 +702,28 @@ function closeForm(){
 async function saveIdea(){
   const title = document.getElementById('f-title').value.trim();
   if (!title) { alert('Title is required.'); return; }
+  const repurpose = {};
+  REPURPOSE_ITEMS.forEach(item => {
+    repurpose[item.key] = document.getElementById(`f-rep-${item.key}`).checked;
+  });
   const payload = {
     title,
     notes: document.getElementById('f-notes').value.trim(),
-    pillar: document.getElementById('f-pillar').value,
+    pillar: document.getElementById('f-pillar').value || null,
     platforms: Array.from(formPlatforms),
     importance: formStars,
     trending: document.getElementById('f-trending').checked,
     status: document.getElementById('f-status').value,
     planned_date: document.getElementById('f-planned-date').value || null,
     posted_url: document.getElementById('f-posted-url').value.trim() || null,
+    source_link: document.getElementById('f-source-link').value.trim() || null,
+    script_link: document.getElementById('f-script-link').value.trim() || null,
+    canva_thumbnail_link: document.getElementById('f-canva-link').value.trim() || null,
+    raw_footage_link: document.getElementById('f-raw-footage-link').value.trim() || null,
+    edited_clips_link: document.getElementById('f-edited-clips-link').value.trim() || null,
+    final_export_link: document.getElementById('f-final-export-link').value.trim() || null,
+    google_drive_folder_link: document.getElementById('f-drive-link').value.trim() || null,
+    repurpose,
   };
   const { error } = await sb.from('video_ideas').update(payload).eq('id', editingId);
   if (error) { alert('Could not save: ' + error.message); return; }
@@ -636,12 +731,8 @@ async function saveIdea(){
   loadIdeas();
 }
 
-// ── Static UI init (pillar/platform/status dropdowns, quick-add defaults) ──
+// ── Static UI init (filter dropdowns) ─────────────────────────────
 function initStaticUI(){
-  document.getElementById('qa-pillar').innerHTML = PILLARS.map(p=>`<option value="${p.key}">${p.label}</option>`).join('');
-  renderPlatformChips('qa-platforms', qaPlatforms, 'toggleQaPlatform');
-  renderStars('qa-stars', qaStars, 'setQaStars');
-
   document.getElementById('filter-status').innerHTML = '<option value="">All statuses</option>' +
     STATUSES.map(s=>`<option value="${s}">${s[0].toUpperCase()+s.slice(1)}</option>`).join('');
   document.getElementById('filter-platform').innerHTML = '<option value="">All platforms</option>' +

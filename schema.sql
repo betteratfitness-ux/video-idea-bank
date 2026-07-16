@@ -8,7 +8,10 @@ create table if not exists video_ideas (
   user_id      uuid not null default auth.uid() references auth.users(id) on delete cascade,
   title        text not null,
   notes        text default '',
-  pillar       text not null check (pillar in (
+  -- pillar is nullable: a NULL pillar means the idea is still sitting in the
+  -- Inbox, uncategorized. The CHECK still applies once a pillar is chosen —
+  -- Postgres treats NULL as satisfying the check, so this needs no rewrite.
+  pillar       text check (pillar in (
                  'stop_starting_over',
                  'workout_systems',
                  'daily_stars',
@@ -23,14 +26,35 @@ create table if not exists video_ideas (
   status       text not null default 'idea' check (status in ('idea','scripted','filmed','posted')),
   posted_url   text,
   planned_date date,
+  -- Source + asset links (Phase 1) — plain URL/text fields, no file uploads yet
+  source_link             text,
+  script_link             text,
+  canva_thumbnail_link    text,
+  raw_footage_link        text,
+  edited_clips_link       text,
+  final_export_link       text,
+  google_drive_folder_link text,
+  -- Repurposing checklist (Phase 1) — flexible key/bool map, e.g.
+  -- {"youtube_long":true,"short_1":false,...}. Keeping this as jsonb instead
+  -- of 9 separate columns makes it painless to add more checklist items later.
+  repurpose    jsonb not null default '{}'::jsonb,
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
 
--- New columns — only apply if this table already existed before this update
+-- Migration for tables created before this update — safe to re-run
 alter table video_ideas add column if not exists posted_url text;
 alter table video_ideas add column if not exists planned_date date;
 alter table video_ideas add column if not exists updated_at timestamptz not null default now();
+alter table video_ideas alter column pillar drop not null;
+alter table video_ideas add column if not exists source_link text;
+alter table video_ideas add column if not exists script_link text;
+alter table video_ideas add column if not exists canva_thumbnail_link text;
+alter table video_ideas add column if not exists raw_footage_link text;
+alter table video_ideas add column if not exists edited_clips_link text;
+alter table video_ideas add column if not exists final_export_link text;
+alter table video_ideas add column if not exists google_drive_folder_link text;
+alter table video_ideas add column if not exists repurpose jsonb not null default '{}'::jsonb;
 
 -- Row Level Security: each user can only see and change their own rows
 alter table video_ideas enable row level security;
